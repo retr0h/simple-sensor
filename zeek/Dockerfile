@@ -33,17 +33,24 @@ FROM ubuntu:20.04
 LABEL maintainer "https://github.com/retr0h"
 LABEL zeek.version "3.2.3"
 
+ARG ZEEKDIR=/opt/zeek
+ARG ZEEKUSER=root
+ARG ZEEKGROUP=root
+
 RUN \
   apt-get update \
-  && apt-get install -y libpcap-dev libssl-dev python3 iproute2 \
-  && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
+  && apt-get install -y libpcap-dev libssl-dev python2-minimal iproute2 \
+  && update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1 \
   && apt-get clean
 
-COPY --from=builder /opt/zeek/ /opt/zeek/
+COPY --from=builder $ZEEKDIR $ZEEKDIR
 COPY --from=builder /root/.zkg/ /root/.zkg/
-COPY zeek/local.zeek /opt/zeek/share/zeek/site/local.zeek
+COPY zeek/local.zeek $ZEEKDIR/share/zeek/site/local.zeek
 
-ENV PATH $PATH:/opt/zeek/bin
+RUN \
+  chown -R $ZEEKUSER:$ZEEKGROUP $ZEEKDIR
+
+ENV PATH $PATH:$ZEEKDIR/bin
 
 ENTRYPOINT ["zeek"]
 CMD ["-h"]
