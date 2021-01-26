@@ -35,7 +35,7 @@ LABEL zeek.version "3.2.3"
 
 RUN \
   apt-get update \
-  && apt-get install -y libpcap-dev libssl-dev python3 \
+  && apt-get install -y libpcap-dev libssl-dev python3 iproute2 \
   && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
   && apt-get clean
 
